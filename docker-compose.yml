@@ -1,0 +1,76 @@
+version: '2'
+
+services:
+
+  samba:
+    image: andrespp/samba-ldap
+    container_name: samba
+    restart: unless-stopped
+    environment:
+     - SAMBA_LDAP_PASSWORD=admin
+    ports:
+     - "139:139"
+     - "445:445"
+    volumes:
+     - ./config/samba/libnss-ldap.conf:/etc/libnss-ldap.conf:ro
+     - ./config/samba/smb.conf:/etc/samba/smb.conf:ro
+     - ./config/samba/smbldap.conf:/etc/smbldap-tools/smbldap.conf:ro
+     - ./config/samba/smbldap_bind.conf:/etc/smbldap-tools/smbldap_bind.conf:ro
+     - ./data/samba/public:/mnt/public
+     - ./data/samba/documents:/mnt/documents
+    depends_on:
+      - openldap
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: openldap
+    restart: unless-stopped
+    environment:
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "Example Inc."
+      LDAP_DOMAIN: "base"
+      LDAP_BASE_DN: ""
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "false"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "true"
+      LDAP_TLS_CRT_FILENAME: "ldap.crt"
+      LDAP_TLS_KEY_FILENAME: "ldap.key"
+      LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+      LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+      LDAP_TLS_ENFORCE: "false"
+      LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+      LDAP_TLS_VERIFY_CLIENT: "demand"
+      LDAP_REPLICATION: "false"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_SSL_HELPER_PREFIX: "ldap"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./config/slapd/ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+      - ./data/ldap:/var/lib/ldap
+      - ./data/slapd.d:/etc/ldap/slapd.d
+      - ./data/certs:/container/service/slapd/assets/certs/
+    ports:
+      - "389:389"
+      - "636:636"
+    command: --copy-service
+    domainname: "example.org"
+    hostname: "ldap-server"
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    restart: unless-stopped
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8000:80"
+      - "8443:443"
+    depends_on:
+      - openldap
+
