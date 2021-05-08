@@ -28,7 +28,7 @@ This compose provides three containers:
 * **Compose up**
     * `docker-compose up -d`
     * **Note**:
-        * OpenLDAP server may take a while to be up the first it runs due to DH parameters generation.
+        * OpenLDAP server may take a while to be up due to DH parameters generation.
         * This may cause samba container to crash, which can be fixed with `docker-compose restart samba`.
 
 
