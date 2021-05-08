@@ -9,6 +9,8 @@ services:
     environment:
      - SAMBA_LDAP_PASSWORD=admin
     ports:
+     - "137:137"
+     - "138:138"
      - "139:139"
      - "445:445"
     volumes:
