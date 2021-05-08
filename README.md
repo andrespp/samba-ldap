@@ -37,13 +37,14 @@ This compose provides three containers:
 
 
 * **Set shared directories permissions**
-    * ```
+
+```
 $ sudo chown +0 data/samba/documents
 $ sudo chgrp +513 data/samba/documents # Domain users
 $ sudo chmod 750 data/samba/documents
 ```
 
-    * ```
+```
 $ sudo chown +0 data/samba/public
 $ sudo chgrp +514 data/samba/public # Domain guests
 $ sudo chmod 777 data/samba/public/
