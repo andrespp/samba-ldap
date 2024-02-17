@@ -70,6 +70,10 @@ $ sudo chmod 777 data/samba/public/
     * `docker exec -it samba smbldap-userdel -r username` # remove files
 
 
+* **Change user password**
+    * `docker exec -it samba  smbldap-passwd username`
+
+
 * **Add a group**
     * `docker exec -it samba smbldap-groupadd -a groupname`
 
